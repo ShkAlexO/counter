@@ -1,0 +1,27 @@
+.countWrap {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    column-gap: 50px;
+    max-width: 800px;
+    width: 100%;
+    min-height: 100dvh;
+    align-content: center;
+    margin-inline: auto;
+
+    .buttonsInner {
+      margin-top: auto;
+      display: flex;
+      gap: 20px;
+
+      button {
+        display: block;
+        width: 100%;
+      }
+    }
+
+  .inputsInner {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+  }
+}

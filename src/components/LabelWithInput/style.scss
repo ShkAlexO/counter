@@ -1,0 +1,22 @@
+.LabelWithInput {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  column-gap: 15px;
+  align-items: flex-end;
+
+  input {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+    transition: all .3s ease;
+
+    &:focus {
+      background-color: var(--tertiary-color);
+    }
+
+    &.invalid {
+      background-color: var(--quaternary-color);
+    }
+  }
+}

@@ -1,0 +1,9 @@
+.box {
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+  padding: 40px 20px 20px;
+  border-radius: 8px;
+  border: var(--primary-color) 1px solid;
+  background-color: rgba(29, 33, 45, 0.6);
+}

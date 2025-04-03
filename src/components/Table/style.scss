@@ -1,0 +1,13 @@
+.table {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  border-radius: 4px;
+  padding: 30px 20px;
+  background-color: var(--primary-color);
+
+  .table-text-highlight {
+    color: var(--quaternary-color);
+  }
+}
