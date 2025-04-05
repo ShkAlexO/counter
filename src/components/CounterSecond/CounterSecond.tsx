@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Box} from "@c/Box/Box";
 import {LabelWithInput} from "@c/LabelWithInput/LabelWithInput";
 import {Button} from "@c/Button/Button";
@@ -16,21 +16,26 @@ export const CounterSecond = () => {
     const [defaultNumber, setDefaultNumber] = useState<string>('0')
     const [defaultMaxNumber, setDefaultMaxNumber] = useState<string>('0')
 
-    const [inputMaxNumber, setInputMaxNumber] = useState<string>(maxValue ? maxValue :'0')
-    const [inputStartNumber, setInputStartNumber] = useState<string>(startValue ? startValue :'0')
-    const [isInputMaxInvalid, setIsInputMaxInValid] = useState<boolean>(false)
-    const [isInputStartInvalid, setIsInputStartInValid] = useState<boolean>(false)
+    const [inputMaxNumber, setInputMaxNumber] = useState<string>(maxValue ? maxValue : '0')
+    const [inputStartNumber, setInputStartNumber] = useState<string>(startValue ? startValue : '0')
+    const [isInputMaxInvalid, setIsInputMaxInvalid] = useState<boolean>(false)
+    const [isInputStartInvalid, setIsInputStartInvalid] = useState<boolean>(false)
     const [isDisabledSetButton, setIsDisabledSetButton] = useState<boolean>(true)
     const [isControlButtonsDisabled, setIsControlButtonsDisabled] = useState<boolean>(true)
     const [isShowHint, setIsShowHint] = useState<boolean>(false)
     const [message, setMessage] = useState<string>('');
     const [clsTextHighlight, setClsTextHighlight] = useState<boolean>(false);
 
-    const isNonZeroInputs = (+inputMaxNumber !== 0 && +inputStartNumber !== 0)
-    const isValidInput =   +inputMaxNumber < 0 ||
-        +inputStartNumber < 0 ||
-        +inputMaxNumber < +inputStartNumber ||
-        +inputMaxNumber === +inputStartNumber && isNonZeroInputs
+    const isValidInput = useMemo(() => {
+        const max = +inputMaxNumber;
+        const start = +inputStartNumber;
+        return (
+            max < 0 ||
+            start < 0 ||
+            max < start ||
+            (max === start && max !== 0 && start !== 0)
+        );
+    }, [inputMaxNumber, inputStartNumber]);
 
     useEffect(() => {
         if (isValidInput) {
@@ -38,52 +43,52 @@ export const CounterSecond = () => {
             setIsDisabledSetButton(true)
         } else {
             setMessage(hintMessageText)
-
-            if (isNonZeroInputs) {
-                setIsDisabledSetButton(false)
-            } else {
-                setIsDisabledSetButton(true)
-            }
+            setIsDisabledSetButton(!(+inputMaxNumber !== 0 || +inputStartNumber !== 0))
         }
 
-    }, [inputMaxNumber, inputStartNumber]);
+    }, [isValidInput, inputMaxNumber, inputStartNumber]);
 
     useEffect(() => {
-        if ( isValidInput || +defaultNumber === +inputMaxNumber && (+defaultNumber !== 0 && +inputMaxNumber !== 0)) {
-            setClsTextHighlight(true)
-        } else {
-            setClsTextHighlight(false)
-        }
-    }, [ defaultNumber, inputMaxNumber, inputStartNumber]);
+        setClsTextHighlight(isValidInput || +defaultNumber === +inputMaxNumber && (+defaultNumber !== 0 && +inputMaxNumber !== 0))
+    }, [isValidInput, defaultNumber, inputMaxNumber, inputStartNumber]);
+
+    const setDefaults = () => {
+        setDefaultNumber('0');
+        setDefaultMaxNumber('0');
+        setIsShowHint(true);
+        setIsControlButtonsDisabled(true);
+    };
+
+    const setInputValidationState = (hasError: boolean) => {
+        setIsInputMaxInvalid(hasError);
+        setIsInputStartInvalid(hasError);
+    };
 
     const setInputMaxNumberHandler = (value: string) => {
         setInputMaxNumber(value)
-        setIsShowHint(true)
-        setIsControlButtonsDisabled(true)
+        setDefaults()
 
-        if (+value < 0 || +inputStartNumber > +value) {
-            setIsInputMaxInValid(true)
+        const max = +value
+        const start = +inputStartNumber
+
+        if (max < 0 || start < 0 || max < start || (max === start && (max !== 0 && start !== 0))) {
+            setInputValidationState(true)
         } else {
-            setIsInputMaxInValid(false)
+            setInputValidationState(false)
         }
     }
 
     const setInputStartNumberHandler = (value: string) => {
         setInputStartNumber(value)
-        setIsShowHint(true)
-        setIsControlButtonsDisabled(true)
+        setDefaults()
 
-        if (+value < 0) {
-            setIsInputStartInValid(true)
-        } else {
-            setIsInputStartInValid(false)
-        }
+        const start = +value
+        const max = +inputMaxNumber
 
-        if (+value > +inputMaxNumber || +inputMaxNumber < 0) {
-            setMessage(errorMessageText)
-            setIsInputMaxInValid(true)
+        if (start < 0 || start > max || (start === max && (start !== 0 && max !== 0))) {
+            setInputValidationState(true)
         } else {
-            setIsInputMaxInValid(false)
+            setInputValidationState(false)
         }
     }
 
